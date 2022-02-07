@@ -49,34 +49,50 @@ def getNotes(request):
 
 @api_view(['GET'])    
 def getNote(request, pk):
-    note = Note.objects.get(id=pk)
-    serializer = NoteSerializer(note, many=False)
-    return Response(serializer.data)
+    try:
+        note = Note.objects.get(id=pk)
+        serializer = NoteSerializer(note, many=False)
+        return Response(serializer.data)
+    except Note.DoesNotExist:
+        return Response('Note not found', status=404)
 
 @api_view(['POST'])
 def createNote(request):
-    data = request.data
+    try:
+        data = request.data
 
-    note = Note.objects.create(
-        body=data['body']
-    )
-
-    serializer = NoteSerializer(note, many=False)
-    return Response(serializer.data)
+        note = Note.objects.create(
+            body=data['body'],
+            title=data['title']
+        )
+        serializer = NoteSerializer(note, many=False)
+        
+        return Response(serializer.data)
+    except KeyError:
+        return Response('Invalid data', status=422)
 
 @api_view(['PUT'])
 def updateNote(request, pk):
-    data = request.data
+    try:
+        data = request.data
 
-    note = Note.objects.get(id=pk)
-    serializer = NoteSerializer(note, data=data)
-    if serializer.is_valid():
-        serializer.save()
-
-    return Response(serializer.data)
+        note = Note.objects.get(id=pk)
+        serializer = NoteSerializer(note, data=data, partial=True)
+        
+        if serializer.is_valid():
+            serializer.save()
+        
+        return Response(serializer.data)
+    except Note.DoesNotExist:
+        return Response('Note youre trying to update does not exist', status=404)
 
 @api_view(['DELETE'])
 def deleteNote(request, pk):
-    note = Note.objects.get(id=pk)
-    note.delete()
-    return Response('Note was deleted')
+    try:
+        note = Note.objects.get(id=pk)
+        note.delete()
+        return Response('Note was deleted')
+    except Note.DoesNotExist:
+        return Response('Note you are trying to delete is not found', status=404)
+
+    

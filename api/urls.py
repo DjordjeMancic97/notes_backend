@@ -3,10 +3,10 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.getRoutes),
-    path('notes/', views.getNotes),
-    path('notes/create/', views.createNote),
-    path('notes/<str:pk>/update', views.updateNote),
-     path('notes/<str:pk>/delete', views.deleteNote),
-    path('notes/<str:pk>/', views.getNote),
+    path('', views.getRoutes, name='home'),
+    path('notes/', views.getNotes, name='notes'),
+    path('notes/create/', views.createNote, name='create_note'),
+    path('notes/<str:pk>/update', views.updateNote, name='update_note'),
+    path('notes/<str:pk>/delete', views.deleteNote, name='delete_note'),
+    path('notes/<str:pk>/', views.getNote, name='get_note'),
 ]
